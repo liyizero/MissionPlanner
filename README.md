@@ -30,6 +30,8 @@ How to compile
   Select "Visual Studio Community 2017 for Windows Desktop" version 15.3 or newer (to include .NET standard 2.0).
 - Microsoft .NET 4.0
 - .NET standard 2.0
+- .Net Framework 从 4.6.2 到 4.7.2 要全部装
+- Nuget还原后还要手动改MissionPlanner.csproj.user 加入ReferencePath
 
 2. Check out
 
