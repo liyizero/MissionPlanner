@@ -14,13 +14,12 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
 using log4net;
-using Microsoft.Scripting.Utils;
 using MissionPlanner.Controls;
 using MissionPlanner.Utilities;
 
 namespace MissionPlanner.GCSViews.ConfigurationView
 {
-    public partial class ConfigRawParams : UserControl, IActivate, IDeactivate
+    public partial class ConfigRawParams : MyUserControl, IActivate, IDeactivate
     {
         // from http://stackoverflow.com/questions/2512781/winforms-big-paragraph-tooltip/2512895#2512895
         private const int maximumSingleLineTooltipLength = 50;
@@ -683,6 +682,31 @@ namespace MissionPlanner.GCSViews.ConfigurationView
                 }
                 catch
                 {
+                }
+            }
+
+            if (e.ColumnIndex == Value.Index)
+            {
+                var check = Params[e.ColumnIndex, e.RowIndex].EditedFormattedValue;
+                var name = Params[Command.Index, e.RowIndex].Value.ToString();
+
+                var availableBitMask =
+                    ParameterMetaDataRepository.GetParameterBitMaskInt(name, MainV2.comPort.MAV.cs.firmware.ToString());
+                if (availableBitMask.Count > 0)
+                {
+                    var mcb = new MavlinkCheckBoxBitMask();
+                    var list = new MAVLink.MAVLinkParamList();
+                    list.Add(new MAVLink.MAVLinkParam(name, double.Parse(check.ToString(), CultureInfo.InvariantCulture),
+                        MAVLink.MAV_PARAM_TYPE.INT32));
+                    mcb.setup(name, list);
+                    mcb.ValueChanged += (o, s, value) =>
+                    {
+                        Params[e.ColumnIndex, e.RowIndex].Value = value;
+                        Params.Invalidate();
+                        mcb.Focus();
+                    };
+                    var frm = mcb.ShowUserControl();
+                    frm.TopMost = true;
                 }
             }
 

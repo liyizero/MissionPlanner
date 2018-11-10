@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Net;
 using System.IO;
@@ -61,6 +60,11 @@ namespace MissionPlanner
                 "If your error is about Microsoft.DirectX.DirectInput, please install the latest directx redist from here http://www.microsoft.com/en-us/download/details.aspx?id=35 \n\n");
             Console.WriteLine("Debug under mono    MONO_LOG_LEVEL=debug mono MissionPlanner.exe");
 
+            Console.WriteLine("Data Dir "+Settings.GetDataDirectory());
+            Console.WriteLine("Log Dir "+Settings.GetDefaultLogDir());
+            Console.WriteLine("Running Dir "+Settings.GetRunningDirectory());
+            Console.WriteLine("User Data Dir "+Settings.GetUserDataDirectory());
+
             var t = Type.GetType("Mono.Runtime");
             MONO = (t != null);
 
@@ -69,7 +73,6 @@ namespace MissionPlanner
             System.Windows.Forms.Application.EnableVisualStyles();
             XmlConfigurator.Configure();
             log.Info("******************* Logging Configured *******************");
-            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
 
             ServicePointManager.DefaultConnectionLimit = 10;
 
@@ -204,7 +207,7 @@ namespace MissionPlanner
 
             CleanupFiles();
 
-            LoadDlls();
+            //LoadDlls();
 
             log.InfoFormat("64bit os {0}, 64bit process {1}", System.Environment.Is64BitOperatingSystem,
                 System.Environment.Is64BitProcess);

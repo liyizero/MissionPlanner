@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Reflection;
 using System.Text;
@@ -1194,7 +1192,17 @@ namespace MissionPlanner.Log
 
                 Loading.ShowLoading("Graphing " + type + " - " + fieldname, this);
 
-                ThreadPool.QueueUserWorkItem(o => GraphItem_GetList(fieldname, type, dflog, dataModifier, left));
+                ThreadPool.QueueUserWorkItem(o =>
+                {
+                    try
+                    {
+                        GraphItem_GetList(fieldname, type, dflog, dataModifier, left);
+                    }
+                    catch (Exception ex)
+                    {
+                        CustomMessageBox.Show("Failed to graph item: " + ex.Message, Strings.ERROR);
+                    }
+                });
             }
             else
             {
@@ -1202,7 +1210,10 @@ namespace MissionPlanner.Log
                 var newlist = new PointPairList();
                 list1.ForEach(a =>
                 {
-                    newlist.Add(new PointPair(a.Item1, a.Item2));
+                    if (chk_time.Checked)
+                        newlist.Add(new PointPair(new XDate(a.Item1.time), a.Item2));
+                    else
+                        newlist.Add(new PointPair(a.Item1.lineno, a.Item2));
                 });
                 GraphItem_AddCurve(newlist, type, fieldname, left);
             }
@@ -2375,7 +2386,12 @@ namespace MissionPlanner.Log
                 if (chk_msg.Checked)
                     DrawMSG();
 
-                DrawMap((long)sender.GraphPane.XAxis.Scale.Min, (long)sender.GraphPane.XAxis.Scale.Max);
+                if (!chk_time.Checked)
+                    DrawMap((long)sender.GraphPane.XAxis.Scale.Min, (long)sender.GraphPane.XAxis.Scale.Max);
+
+                if (chk_time.Checked)
+                    DrawMap(dflog.GetLineNoFromTime(logdata, new XDate(sender.GraphPane.XAxis.Scale.Min).DateTime),
+                        dflog.GetLineNoFromTime(logdata, new XDate(sender.GraphPane.XAxis.Scale.Max).DateTime));
 
                 sender.Invalidate();
             }
@@ -2871,6 +2887,9 @@ namespace MissionPlanner.Log
             ModeCache.Clear();
             ErrorCache.Clear();
             TimeCache.Clear();
+            MSGCache.Clear();
+
+            BUT_cleargraph_Click(null, null);
 
             if (chk_time.Checked)
             {
@@ -2890,6 +2909,9 @@ namespace MissionPlanner.Log
                 zg1.GraphPane.XAxis.Title.Text = "Line Number";
                 zg1.GraphPane.YAxis.Title.Text = "Output";
             }
+
+            zg1.AxisChange();
+            zg1.Invalidate();
         }
 
         double prevMouseX = 0;

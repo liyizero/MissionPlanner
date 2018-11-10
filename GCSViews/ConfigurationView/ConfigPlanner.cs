@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using DirectShowLib;
-using MissionPlanner.ArduPilot;
 using MissionPlanner.Controls;
 using MissionPlanner.Joystick;
 using MissionPlanner.Utilities;
@@ -15,7 +14,7 @@ using WebCamService;
 
 namespace MissionPlanner.GCSViews.ConfigurationView
 {
-    public partial class ConfigPlanner : UserControl, IActivate
+    public partial class ConfigPlanner : MyUserControl, IActivate
     {
         private List<CultureInfo> _languages;
         private bool startup;

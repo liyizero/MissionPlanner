@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.ComponentModel;
 using System.Drawing;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -12,7 +10,7 @@ using MissionPlanner.Utilities;
 
 namespace MissionPlanner.GCSViews.ConfigurationView
 {
-    public partial class ConfigArdurover : UserControl, IActivate
+    public partial class ConfigArdurover : MyUserControl, IActivate
     {
         // from http://stackoverflow.com/questions/2512781/winforms-big-paragraph-tooltip/2512895#2512895
         private const int maximumSingleLineTooltipLength = 50;
